@@ -5,6 +5,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PaginationExampleModule } from './pagination-example/pagination-example.module';
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [
@@ -14,7 +16,11 @@ import { PaginationExampleModule } from './pagination-example/pagination-example
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    PaginationExampleModule
+    PaginationExampleModule,
+    StoreModule.forRoot({}), 
+    StoreDevtoolsModule.instrument({
+      maxAge: 25
+    })
   ],
   providers: [],
   bootstrap: [AppComponent],

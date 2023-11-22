@@ -2,36 +2,46 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs/internal/Observable";
 import { of } from "rxjs/internal/observable/of";
-import { map, catchError } from "rxjs/operators";
-import { TransactionsService } from "src/app/services/transactions.service";
-import { PaginationResponse, TransactionsRequest, TransactionsResponse } from "src/app/services/types";
+import { TransactionsService } from "../core/services/transactions.service";
+import { PaginationResponse, TransactionsRequest } from "../core/services";
+import { Store } from "@ngrx/store";
+import { PaginationDataState, PaginationState, addPagination, getPaginations, getSelectedPagePagination } from "../core";
 
 @Injectable({
     providedIn: 'root',
 })
 
 export class TransactionsFacade {
-    /**
-     *
-     */
-    constructor(private transactionService: TransactionsService) {}
+    getPaginationState$ = this.store.select(getPaginations);
+    constructor(
+        private store: Store<PaginationState>, 
+        private transactionService: TransactionsService
+    ) {}
 
-    initializeTransactions(): Observable<PaginationResponse> {
+    changePage(transactionRequest: TransactionsRequest) {
         let request: TransactionsRequest = {
-            locationsId: 1,
-            page: 1,
-            userId: 1
+            page: transactionRequest.page,
+            userId: transactionRequest.userId
         };
-       return this.transactionService.getTransactions(request).pipe(
-            map(response => this.handleScuccessResponse(response)),
-            catchError((error: HttpErrorResponse) => this.handleFailedResponse(error))
-        );
+       this.transactionService.getTransactions(request).subscribe({
+        next: response => {
+            this.handleScuccessResponse(response);
+        },
+        error: errorResponse => {
+            this.handleFailedResponse(errorResponse);
+        }
+       });
     }
 
-    handleScuccessResponse(response: PaginationResponse): PaginationResponse {
-        let test: PaginationResponse = {};
-        test = response;
-        return test;
+    handleScuccessResponse(response: PaginationResponse) {
+        const paginationDataState: PaginationDataState = {
+            data: response.data,
+            page: response.page,
+            total_pages: response.total_pages,
+            userId: 1
+        };
+
+        this.store.dispatch(addPagination({ payload: paginationDataState }));
     }
 
     handleFailedResponse(errorResponse: HttpErrorResponse): Observable<PaginationResponse> {

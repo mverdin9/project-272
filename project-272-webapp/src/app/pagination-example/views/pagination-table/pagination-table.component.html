@@ -1,0 +1,44 @@
+
+<div class="filters">
+  <div>
+    <mat-form-field class="example-full-width">
+      <mat-label>Filter by User Name</mat-label>
+      <input matInput #inputName>
+    </mat-form-field>
+  </div>
+</div>
+<table id="customers">
+    <tr>
+        <th>Amount</th>
+        <th class="hide-column">Ip</th>
+        <th class="hide-column-location">Location</th>
+        <th>Time</th>
+        <th class="hide-column">Type</th>
+        <th>userName</th>
+    </tr>
+    <tr *ngFor="let item of transactionsToDisplay;">
+        <td>{{ item.amount }}</td>
+        <td class="hide-column">{{ item.ip }}</td>
+        <td class="hide-column-location">
+          <div class="hide-column-location responsive-css">
+            {{item.location.city}}
+            {{item.location.zipCode}}
+            {{item.location.address}}
+          </div>
+        </td>
+        <td>{{ item.timestamp | date }}</td>
+        <td class="hide-column">{{ item.txnType }}</td>
+        <td>{{ item.userName }}</td>
+    </tr>
+</table>
+
+<mat-paginator [length]="lenght"
+              [pageSize]="pageSize"
+              [pageIndex]="pageIndex"
+              (page)="handlePageEvent($event)"
+              aria-label="Select page">
+</mat-paginator>
+
+<div class="total">
+    <strong>Total Amount per Page:&nbsp;</strong> {{ totalAmount | currency }} 
+</div>
